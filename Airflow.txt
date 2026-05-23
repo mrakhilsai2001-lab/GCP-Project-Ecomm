@@ -28,8 +28,8 @@ dag = DAG(
 def extract_data():
     data = {
         'id': [1, 2, 3],
-        'name': ['Akhil', 'Ravi', 'Kiran'],
-        'salary': [50000, 60000, 70000]
+        'name': ['Akhil', 'Ravi', 'Vamshi'],
+        'salary': [50000, 60000, 100000]
     }
     df = pd.DataFrame(data)
     df.to_csv('/tmp/raw_data.csv', index=False)
