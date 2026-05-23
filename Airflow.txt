@@ -1,0 +1,71 @@
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflow.utils.dates import days_ago
+from datetime import timedelta
+import pandas as pd
+import logging
+
+# Default arguments
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'retries': 2,
+    'retry_delay': timedelta(minutes=5)
+}
+
+# Create DAG
+dag = DAG(
+    dag_id='sample_etl_pipeline',
+    default_args=default_args,
+    description='Simple ETL Pipeline using Airflow',
+    schedule_interval='@daily',
+    start_date=days_ago(1),
+    catchup=False
+)
+
+# Extract Task
+def extract_data():
+    data = {
+        'id': [1, 2, 3, 4],
+        'name': ['Akhil', 'Sun', 'Tyson', 'Vamshi'],
+        'salary': [50000, 60000, 100000, 70000]
+    }
+    df = pd.DataFrame(data)
+    df.to_csv('/tmp/raw_data.csv', index=False)
+    logging.info("Data Extracted Successfully")
+
+# Transform Task
+def transform_data():
+    df = pd.read_csv('/tmp/raw_data.csv')
+    df['salary'] = df['salary'] * 1.10
+    df.to_csv('/tmp/transformed_data.csv', index=False)
+    logging.info("Data Transformed Successfully")
+
+# Load Task
+def load_data():
+    df = pd.read_csv('/tmp/transformed_data.csv')
+    print(df)
+    logging.info("Data Loaded Successfully")
+
+# Task Definitions
+extract_task = PythonOperator(
+    task_id='extract_task',
+    python_callable=extract_data,
+    dag=dag
+)
+
+transform_task = PythonOperator(
+    task_id='transform_task',
+    python_callable=transform_data,
+    dag=dag
+)
+
+load_task = PythonOperator(
+    task_id='load_task',
+    python_callable=load_data,
+    dag=dag
+)
+
+# Task Workflow
+extract_task >> transform_task >> load_task 
