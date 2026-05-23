@@ -27,9 +27,9 @@ dag = DAG(
 # Extract Task
 def extract_data():
     data = {
-        'id': [1, 2, 3],
-        'name': ['Akhil', 'Ravi', 'Vamshi'],
-        'salary': [50000, 60000, 100000]
+        'id': [1, 2, 3, 4],
+        'name': ['Akhil', 'Sun', 'Tyson', 'Vamshi'],
+        'salary': [50000, 60000, 100000, 70000]
     }
     df = pd.DataFrame(data)
     df.to_csv('/tmp/raw_data.csv', index=False)
@@ -68,4 +68,4 @@ load_task = PythonOperator(
 )
 
 # Task Workflow
-extract_task >> transform_task >> load_task
+extract_task >> transform_task >> load_task 
