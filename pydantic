@@ -1,0 +1,22 @@
+from pydantic import BaseModel, ValidationError, Field
+from typing import Literal
+
+# 1. Define your allowed list of categories using Literal
+allowed_category = Literal["Electronics", "Clothing", "Home", "Toys"]
+
+# 2. Create the validation model
+class ProductValidation(BaseModel):
+    product_name: str
+    category: allowed_category
+
+# 3. Validation function
+def validate_product_data(name: str, category: str):
+    try:
+        data = ProductValidation(product_name=name, category=category)
+        print(f"Validation successful! Data: {data.model_dump()}")
+    except ValidationError as e:
+        print(f"Validation failed: {e.errors()[0]['msg']}")
+
+# --- Testing the validator ---
+validate_product_data("Wireless Mouse", "Electronics")  # Valid
+validate_product_data("Smart TV", "Appliances")         # Invalid: not in allowed list
